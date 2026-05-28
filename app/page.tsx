@@ -131,14 +131,130 @@ const stats = [
 ];
 
 const fallbackLocations = [
-  "Mumbai",
-  "Delhi NCR",
-  "Bengaluru",
-  "Hyderabad",
-  "Pune",
+  "Agartala",
+  "Agra",
   "Ahmedabad",
+  "Ahmednagar",
+  "Aizawl",
+  "Ajmer",
+  "Akola",
+  "Alappuzha",
+  "Aligarh",
+  "Allahabad",
+  "Alwar",
+  "Ambala",
+  "Amravati",
+  "Amritsar",
+  "Anand",
+  "Anantapur",
+  "Asansol",
+  "Aurangabad",
+  "Bareilly",
+  "Bathinda",
+  "Belagavi",
+  "Bengaluru",
+  "Berhampur",
+  "Bhagalpur",
+  "Bharuch",
+  "Bhavnagar",
+  "Bhilai",
+  "Bhopal",
+  "Bhubaneswar",
+  "Bikaner",
+  "Bilaspur",
+  "Bokaro",
+  "Chandigarh",
+  "Chennai",
+  "Coimbatore",
+  "Cuttack",
+  "Dehradun",
+  "Delhi NCR",
+  "Dhanbad",
+  "Durgapur",
+  "Erode",
+  "Faridabad",
+  "Gandhinagar",
+  "Ghaziabad",
+  "Gorakhpur",
+  "Guntur",
+  "Gurugram",
+  "Guwahati",
+  "Gwalior",
+  "Haldwani",
+  "Hisar",
+  "Hubballi",
+  "Hyderabad",
+  "Imphal",
+  "Indore",
+  "Itanagar",
+  "Jabalpur",
   "Jaipur",
+  "Jalandhar",
+  "Jammu",
+  "Jamnagar",
+  "Jamshedpur",
+  "Jhansi",
+  "Jodhpur",
+  "Jorhat",
+  "Kadapa",
+  "Kakinada",
+  "Kannur",
+  "Kanpur",
+  "Karnal",
+  "Kochi",
+  "Kolhapur",
+  "Kolkata",
+  "Kollam",
+  "Kota",
+  "Kozhikode",
+  "Kurnool",
+  "Lucknow",
+  "Ludhiana",
+  "Madurai",
+  "Mangaluru",
+  "Mathura",
+  "Meerut",
+  "Mohali",
+  "Mumbai",
+  "Mysuru",
+  "Nagpur",
+  "Nashik",
+  "Navi Mumbai",
+  "Noida",
+  "Panaji",
+  "Panipat",
+  "Patiala",
+  "Patna",
+  "Pondicherry",
+  "Pune",
+  "Raipur",
+  "Rajahmundry",
+  "Rajkot",
+  "Ranchi",
+  "Rohtak",
+  "Rourkela",
+  "Salem",
+  "Sambalpur",
+  "Shillong",
+  "Shimla",
+  "Siliguri",
+  "Solapur",
+  "Srinagar",
   "Surat",
+  "Thane",
+  "Thiruvananthapuram",
+  "Thrissur",
+  "Tiruchirappalli",
+  "Tirupati",
+  "Tiruppur",
+  "Udaipur",
+  "Ujjain",
+  "Vadodara",
+  "Varanasi",
+  "Vellore",
+  "Vijayawada",
+  "Visakhapatnam",
+  "Warangal",
 ];
 
 const fallbackLabourTeams = [
@@ -331,6 +447,7 @@ export default async function Home() {
     materialSuppliers,
     architectFirms,
   } = await getMarketplaceData();
+  const cityOptions = Array.from(new Set([...locations, ...fallbackLocations])).sort();
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#f8f5ef] text-[#1b1b1d]">
@@ -427,7 +544,7 @@ export default async function Home() {
         className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:py-20"
         id="location"
       >
-        <div className="grid gap-8 rounded-lg border border-[#ded7ca] bg-white p-6 shadow-sm md:grid-cols-[0.9fr_1.1fr] md:p-8 lg:p-10">
+        <div className="grid gap-8 rounded-lg border border-[#ded7ca] bg-white p-6 shadow-sm md:grid-cols-[0.92fr_1.08fr] md:p-8 lg:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
               Location based marketplace
@@ -442,41 +559,37 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="rounded-lg bg-[#f8f5ef] p-5">
+          <div className="rounded-lg bg-[#f8f5ef] p-5 md:p-6">
             <label
               className="text-sm font-semibold uppercase tracking-[0.16em] text-[#6b675f]"
-              htmlFor="location-search"
+              htmlFor="city-search"
             >
-              Enter project location
+              Search or select project city
             </label>
-            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-              <input
-                className="min-h-12 flex-1 rounded-full border border-[#d3c8b7] bg-white px-5 text-base outline-none transition placeholder:text-[#9b948a] focus:border-[#35564d]"
-                id="location-search"
-                placeholder="Search city or area"
-                type="text"
-              />
-              <button className="min-h-12 rounded-full bg-[#171716] px-6 text-sm font-semibold text-white transition hover:bg-[#35564d]">
-                Search
-              </button>
-            </div>
-
-            <div className="mt-6">
-              <p className="text-sm font-semibold text-[#6b675f]">
-                Popular locations
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {locations.map((location) => (
-                  <a
-                    className="rounded-full border border-[#d3c8b7] bg-white px-4 py-2 text-sm font-medium text-[#35312c] transition hover:border-[#35564d] hover:text-[#35564d]"
-                    href="#interior-designers"
-                    key={location}
-                  >
-                    {location}
-                  </a>
-                ))}
-              </div>
-            </div>
+            <input
+              className="mt-3 min-h-12 w-full rounded-full border border-[#d3c8b7] bg-white px-5 text-base text-[#171716] outline-none transition placeholder:text-[#9b948a] focus:border-[#35564d]"
+              id="city-search"
+              list="city-options"
+              placeholder="Type or choose a city in India"
+              type="search"
+            />
+            <datalist id="city-options">
+              {cityOptions.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </datalist>
+            <a
+              className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#171716] px-6 text-sm font-semibold text-white transition hover:bg-[#35564d]"
+              href="#interior-designers"
+            >
+              Find providers in this city
+            </a>
+            <p className="mt-4 text-sm leading-6 text-[#605b52]">
+              Start typing to search the list, or open the field suggestions to
+              choose from available Indian cities.
+            </p>
           </div>
         </div>
       </section>
@@ -629,24 +742,28 @@ export default async function Home() {
               carpenters, plumbers, tile masons, ceiling teams, and other
               skilled workers needed for residential and commercial interiors.
             </p>
-            <details className="group mt-6 rounded-lg border border-white/16 bg-white/8">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-semibold text-white">
-                <span>Browse {labourTeams.length} labour worker types</span>
-                <span className="text-lg leading-none transition group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="grid max-h-72 gap-2 overflow-y-auto border-t border-white/12 p-4 sm:grid-cols-2">
+            <div className="mt-6 rounded-lg border border-white/16 bg-white/8 p-4">
+              <label
+                className="text-sm font-semibold uppercase tracking-[0.16em] text-white/70"
+                htmlFor="labour-search"
+              >
+                Search or select labour type
+              </label>
+              <input
+                className="mt-3 min-h-12 w-full rounded-full border border-white/16 bg-[#171716] px-5 text-base text-white outline-none transition placeholder:text-white/42 focus:border-white"
+                id="labour-search"
+                list="labour-options"
+                placeholder={`Type or choose from ${labourTeams.length} labour types`}
+                type="search"
+              />
+              <datalist id="labour-options">
                 {labourTeams.map((team) => (
-                  <span
-                    className="rounded-full border border-white/16 bg-[#171716] px-3 py-2 text-sm text-white/82"
-                    key={team}
-                  >
+                  <option key={team} value={team}>
                     {team}
-                  </span>
+                  </option>
                 ))}
-              </div>
-            </details>
+              </datalist>
+            </div>
             <a
               className="mt-8 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#171716] transition hover:bg-[#f3eadc]"
               href="mailto:partners@maisonmarket.example"
