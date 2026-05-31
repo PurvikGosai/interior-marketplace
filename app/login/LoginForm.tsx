@@ -21,7 +21,7 @@ const loginOptions: Array<{
   {
     role: "customer",
     title: "Login as customer",
-    description: "Find designers, architects, materials, and labour teams.",
+    description: "Find designers, architects, materials, and skilled workers.",
     bullets: ["Save project location", "Shortlist experts", "Request quotes"],
   },
   {
@@ -230,7 +230,7 @@ export function LoginForm() {
                   <option>Wall artist</option>
                   <option>Carpenter</option>
                   <option>Painter</option>
-                  <option>Other labour team</option>
+                  <option>Other skilled worker team</option>
                 </select>
               </div>
 

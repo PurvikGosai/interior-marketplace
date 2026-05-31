@@ -21,3 +21,360 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+@keyframes intro-canvas-arrival {
+  0% {
+    filter: blur(8px);
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes intro-pendant-drop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -44vh);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(-50%, 10px);
+  }
+
+  88% {
+    transform: translate(-50%, -4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes intro-bulb-flicker {
+  0%,
+  16%,
+  30%,
+  46% {
+    background: #72552c;
+    box-shadow: 0 0 0 rgba(255, 226, 159, 0);
+  }
+
+  8%,
+  23%,
+  38%,
+  100% {
+    background: #fff1bd;
+    box-shadow: 0 0 24px 8px rgba(255, 214, 124, 0.75);
+  }
+}
+
+@keyframes intro-glow-flicker {
+  0%,
+  16%,
+  30%,
+  46% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.72);
+  }
+
+  8%,
+  23%,
+  38% {
+    opacity: 0.35;
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes intro-warmth {
+  0%,
+  46% {
+    opacity: 0;
+  }
+
+  58% {
+    opacity: 0.22;
+  }
+
+  100% {
+    opacity: 0.09;
+  }
+}
+
+@keyframes intro-logo-resolve {
+  0% {
+    filter: blur(14px);
+    opacity: 0;
+    transform: translateY(22px) scale(0.66);
+  }
+
+  64% {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(-4px) scale(1.025);
+  }
+
+  100% {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes intro-caption-resolve {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marketplace-arrival {
+  0% {
+    filter: blur(12px);
+    opacity: 0.32;
+    transform: scale(0.8);
+  }
+
+  100% {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.brand-intro {
+  align-items: center;
+  background: #071a1e;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow: hidden;
+  perspective: 1200px;
+  position: fixed;
+  transition: background 980ms ease;
+  z-index: 100;
+}
+
+.brand-intro__canvas {
+  animation: intro-canvas-arrival 760ms ease-out both;
+  inset: 0;
+  position: absolute;
+  transition:
+    filter 1060ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 980ms ease,
+    transform 1060ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-intro__canvas canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.brand-intro__grid {
+  background-image:
+    linear-gradient(rgba(231, 196, 126, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(231, 196, 126, 0.09) 1px, transparent 1px);
+  background-size: 54px 54px;
+  inset: 0;
+  mask-image: radial-gradient(circle, black 0%, transparent 76%);
+  opacity: 0.58;
+  position: absolute;
+  transition:
+    opacity 820ms ease,
+    transform 1050ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-intro__pendant {
+  animation: intro-pendant-drop 760ms cubic-bezier(0.22, 1, 0.36, 1) 1960ms both;
+  height: 276px;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  transition:
+    opacity 720ms ease,
+    transform 980ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 180px;
+  z-index: 3;
+}
+
+.brand-intro__pendant-cord {
+  background: rgba(248, 225, 174, 0.94);
+  height: 192px;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  width: 2px;
+}
+
+.brand-intro__pendant-shade {
+  background: #af7d3c;
+  border-radius: 56px 56px 8px 8px;
+  clip-path: polygon(28% 0, 72% 0, 100% 100%, 0 100%);
+  height: 58px;
+  left: 50%;
+  position: absolute;
+  top: 188px;
+  transform: translateX(-50%);
+  width: 106px;
+}
+
+.brand-intro__pendant-bulb {
+  animation: intro-bulb-flicker 650ms linear 2600ms both;
+  border-radius: 0 0 18px 18px;
+  height: 24px;
+  left: 50%;
+  position: absolute;
+  top: 236px;
+  transform: translateX(-50%);
+  width: 28px;
+  z-index: -1;
+}
+
+.brand-intro__pendant-glow {
+  animation: intro-glow-flicker 650ms linear 2600ms both;
+  background: linear-gradient(180deg, rgba(255, 223, 148, 0.5), transparent 84%);
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  height: min(66vh, 650px);
+  left: 50%;
+  position: absolute;
+  top: 239px;
+  width: min(76vw, 880px);
+  z-index: -2;
+}
+
+.brand-intro__warmth {
+  animation: intro-warmth 1080ms ease 2520ms both;
+  background: rgba(235, 176, 89, 0.72);
+  inset: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  position: absolute;
+}
+
+.brand-intro__stage {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition:
+    opacity 760ms ease,
+    transform 1060ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 4;
+}
+
+.brand-intro__lockup {
+  align-items: center;
+  animation: intro-logo-resolve 840ms cubic-bezier(0.22, 1, 0.36, 1) 3240ms both;
+  display: flex;
+  flex-direction: column;
+  margin-top: 102px;
+}
+
+.brand-intro__logo-shell {
+  background: #06151d;
+  border: 1px solid rgba(231, 196, 126, 0.7);
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.42);
+  height: 132px;
+  overflow: hidden;
+  position: relative;
+  width: 132px;
+}
+
+.brand-intro__wordmark {
+  color: #fff4d7;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  margin-top: 16px;
+  text-transform: uppercase;
+}
+
+.brand-intro__caption {
+  animation: intro-caption-resolve 420ms ease-out 3640ms both;
+  color: rgba(255, 244, 215, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  margin-top: 13px;
+  text-transform: uppercase;
+}
+
+.brand-intro--leaving {
+  background: transparent;
+  pointer-events: none;
+}
+
+.brand-intro--leaving .brand-intro__canvas {
+  filter: blur(10px);
+  opacity: 0;
+  transform: scale(1.46);
+}
+
+.brand-intro--leaving .brand-intro__grid {
+  opacity: 0;
+  transform: scale(1.5);
+}
+
+.brand-intro--leaving .brand-intro__pendant {
+  opacity: 0;
+  transform: translate(-50%, -280px);
+}
+
+.brand-intro--leaving .brand-intro__warmth {
+  opacity: 0;
+}
+
+.brand-intro--leaving .brand-intro__stage {
+  opacity: 0;
+  transform: scale(3.6);
+}
+
+.marketplace-entrance {
+  animation: marketplace-arrival 1260ms cubic-bezier(0.16, 1, 0.3, 1) 4380ms both;
+  transform-origin: center center;
+}
+
+@media (max-width: 640px) {
+  .brand-intro__logo-shell {
+    height: 112px;
+    width: 112px;
+  }
+
+  .brand-intro__wordmark {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-intro__pendant {
+    display: none;
+  }
+
+  .brand-intro__canvas,
+  .brand-intro__warmth,
+  .brand-intro__lockup,
+  .brand-intro__caption,
+  .marketplace-entrance {
+    animation: none;
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+}

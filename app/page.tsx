@@ -1,4 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Crown } from "lucide-react";
+import { BrandIntro } from "@/app/components/BrandIntro";
+import { MarketplaceHeader } from "@/app/components/MarketplaceHeader";
+import { MarketplaceSearch } from "@/app/components/MarketplaceSearch";
+import {
+  featuredService,
+  portfolioProjects,
+  primaryServices,
+  secondaryServices,
+} from "@/app/data/marketplace";
 import { createSupabaseClient } from "@/lib/supabase";
 
 const fallbackCategories = [
@@ -257,59 +268,6 @@ const fallbackLocations = [
   "Warangal",
 ];
 
-const fallbackLabourTeams = [
-  "Electricians",
-  "POP artists",
-  "Wall artists",
-  "Painters",
-  "Carpenters",
-  "Plumbers",
-  "Tile masons",
-  "False ceiling teams",
-  "Civil masons",
-  "Granite installers",
-  "Marble polishers",
-  "Wallpaper installers",
-  "Texture painters",
-  "Gypsum board installers",
-  "HVAC technicians",
-  "AC installers",
-  "Smart home technicians",
-  "CCTV installers",
-  "Networking technicians",
-  "Modular kitchen fitters",
-  "Wardrobe installers",
-  "Furniture polishers",
-  "Upholstery workers",
-  "Curtain installers",
-  "Blinds installers",
-  "Glass partition installers",
-  "Aluminium fabricators",
-  "Welders",
-  "MS fabricators",
-  "Stainless steel fabricators",
-  "Waterproofing teams",
-  "Flooring installers",
-  "Vinyl flooring workers",
-  "Wooden flooring installers",
-  "Epoxy flooring teams",
-  "Stone cladding workers",
-  "Exterior painters",
-  "Deep cleaning crews",
-  "Site supervisors",
-  "Demolition workers",
-  "Loaders and helpers",
-  "Drilling teams",
-  "Core cutting workers",
-  "Pest control technicians",
-  "Gardening teams",
-  "Landscape workers",
-  "Swimming pool technicians",
-  "Solar panel installers",
-  "Fire safety installers",
-  "Signage installers",
-];
-
 type ProviderCard = {
   name: string;
   city: string;
@@ -317,31 +275,45 @@ type ProviderCard = {
   rating: string;
 };
 
-function getCategoryAccent(accentClass: string) {
-  const accents: Record<string, string> = {
-    "bg-amber-700": "bg-amber-700",
-    "bg-emerald-900": "bg-emerald-900",
-    "bg-stone-900": "bg-stone-900",
-    "bg-teal-800": "bg-teal-800",
-  };
-
-  return accents[accentClass] ?? "bg-stone-900";
-}
-
 function getProviderFallback(data: unknown, fallback: ProviderCard[]) {
   return Array.isArray(data) && data.length > 0
     ? (data as ProviderCard[])
     : fallback;
 }
 
-function ProviderGrid({ providers }: { providers: ProviderCard[] }) {
+function ProviderGrid({
+  href,
+  providers,
+}: {
+  href: string;
+  providers: ProviderCard[];
+}) {
+  const providerImages = [
+    "/marketplace/interior-living.png",
+    "/marketplace/portfolio-kitchen.png",
+    "/marketplace/portfolio-bedroom.png",
+    "/marketplace/portfolio-bath.png",
+    "/marketplace/material-library.png",
+  ];
+
   return (
     <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-      {providers.map((provider) => (
-        <article
-          className="rounded-lg border border-[#ded7ca] bg-white p-5 shadow-sm"
+      {providers.map((provider, index) => (
+        <Link
+          className="overflow-hidden rounded-lg border border-[#ded7ca] bg-white shadow-sm"
+          href={href}
           key={provider.name}
         >
+          <div className="relative aspect-[16/10]">
+            <Image
+              alt={`${provider.name} portfolio`}
+              className="object-cover"
+              fill
+              sizes="(min-width: 1280px) 20vw, (min-width: 768px) 50vw, 100vw"
+              src={providerImages[index % providerImages.length]}
+            />
+          </div>
+          <div className="p-5">
           <div className="flex items-start justify-between gap-4">
             <h3 className="text-xl font-semibold leading-tight text-[#171716]">
               {provider.name}
@@ -356,7 +328,8 @@ function ProviderGrid({ providers }: { providers: ProviderCard[] }) {
           <p className="mt-4 text-sm leading-6 text-[#605b52]">
             {provider.specialty}
           </p>
-        </article>
+          </div>
+        </Link>
       ))}
     </div>
   );
@@ -369,7 +342,6 @@ async function getMarketplaceData() {
     return {
       categories: fallbackCategories,
       locations: fallbackLocations,
-      labourTeams: fallbackLabourTeams,
       interiorFirms: fallbackInteriorFirms,
       materialSuppliers: fallbackMaterialSuppliers,
       architectFirms: fallbackArchitectFirms,
@@ -379,7 +351,6 @@ async function getMarketplaceData() {
   const [
     categoriesResult,
     locationsResult,
-    labourTeamsResult,
     interiorFirmsResult,
     materialSuppliersResult,
     architectFirmsResult,
@@ -390,10 +361,6 @@ async function getMarketplaceData() {
         .order("display_order", { ascending: true }),
       supabase
         .from("marketplace_locations")
-        .select("name,display_order")
-        .order("display_order", { ascending: true }),
-      supabase
-        .from("labour_teams")
         .select("name,display_order")
         .order("display_order", { ascending: true }),
       supabase
@@ -419,10 +386,6 @@ async function getMarketplaceData() {
       locationsResult.data && locationsResult.data.length > 0
         ? locationsResult.data.map((location) => location.name)
         : fallbackLocations,
-    labourTeams:
-      labourTeamsResult.data && labourTeamsResult.data.length > 0
-        ? labourTeamsResult.data.map((team) => team.name)
-        : fallbackLabourTeams,
     interiorFirms: getProviderFallback(
       interiorFirmsResult.data,
       fallbackInteriorFirms,
@@ -440,9 +403,7 @@ async function getMarketplaceData() {
 
 export default async function Home() {
   const {
-    categories,
     locations,
-    labourTeams,
     interiorFirms,
     materialSuppliers,
     architectFirms,
@@ -451,40 +412,11 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#f8f5ef] text-[#1b1b1d]">
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-white/20 bg-[#10100f]/55 text-white backdrop-blur-xl">
-        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-          <a className="text-sm font-semibold uppercase tracking-[0.28em]" href="#">
-            Maison Market
-          </a>
-          <div className="hidden items-center gap-8 text-sm text-white/78 md:flex">
-            <a className="transition hover:text-white" href="#interior-designers">
-              Interior designers
-            </a>
-            <a className="transition hover:text-white" href="#architects">
-              Architects
-            </a>
-            <a className="transition hover:text-white" href="#material">
-              Material
-            </a>
-            <a className="transition hover:text-white" href="#man-power">
-              Man power
-            </a>
-            <a className="transition hover:text-white" href="#location">
-              Location
-            </a>
-          </div>
-          <div className="flex items-center gap-2">
-            <a
-              className="rounded-full border border-white/35 px-4 py-2 text-sm font-medium transition hover:border-white hover:bg-white/10"
-              href="/login"
-            >
-              Login
-            </a>
-          </div>
-        </nav>
-      </header>
+      <BrandIntro />
+      <div className="marketplace-entrance">
+      <MarketplaceHeader />
 
-      <section className="relative min-h-[92vh] text-white">
+      <section className="relative min-h-[660px] text-white lg:min-h-[calc(100vh-6.5rem)]">
         <Image
           src="/interior-marketplace-hero.png"
           alt="Luxury contemporary living room with curated furniture and sculptural lighting"
@@ -493,286 +425,293 @@ export default async function Home() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,13,12,0.88)_0%,rgba(12,13,12,0.64)_38%,rgba(12,13,12,0.08)_76%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#f8f5ef] to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,18,16,0.28)_0%,rgba(13,18,16,0.56)_64%,rgba(13,18,16,0.88)_100%)]" />
 
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:pb-20">
-          <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-white/82 backdrop-blur">
-              Curated interiors, sourced beautifully
+        <div className="relative z-10 mx-auto flex min-h-[660px] max-w-7xl items-end px-5 pb-14 pt-16 sm:px-8 lg:min-h-[calc(100vh-6.5rem)] lg:pb-20">
+          <div className="mx-auto w-full max-w-4xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/80">
+              Interior planning, sourcing, and execution
             </p>
-            <h1 className="text-balance text-5xl font-semibold leading-[0.98] sm:text-7xl lg:text-8xl">
-              The premium marketplace for finished spaces.
+            <h1 className="mt-4 text-balance text-5xl font-semibold leading-tight sm:text-6xl lg:text-7xl">
+              Your space, designed your way.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-white/78 sm:text-xl">
-              Discover interior studios, collectible furniture, artisan
-              lighting, and trade-ready materials from a single refined source.
+            <p className="mx-auto mt-3 max-w-3xl text-pretty text-lg leading-8 text-white/86 sm:text-xl">
+              Find trusted interior designers, architects, and material
+              suppliers across India.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a
-                className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#151515] shadow-2xl shadow-black/20 transition hover:bg-[#f3eadc]"
-                href="#interior-designers"
-              >
-                Find designers
-              </a>
-              <a
-                className="inline-flex items-center justify-center rounded-full border border-white/35 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
-                href="#architects"
-              >
-                Find architects
-              </a>
+
+            <div className="mt-8 text-left">
+              <MarketplaceSearch cities={cityOptions} />
             </div>
+
+            <p className="mt-5 text-sm leading-6 text-white/78">
+              Popular searches: Interior designers in Mumbai | Architects in
+              Bengaluru | Electricians in Pune | Tile suppliers in Delhi NCR
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#e5ded2] bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+                Popular searches
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold sm:text-4xl">
+                Start with the service you need
+              </h2>
+            </div>
+            <Link className="hidden text-sm font-semibold text-[#35564d] sm:block" href="/services/featured-listings">
+              View featured listings
+            </Link>
           </div>
 
-          <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map(([value, label]) => (
-              <div
-                className="border-t border-white/24 pt-4 text-white/82"
-                key={label}
-              >
-                <div className="text-3xl font-semibold text-white">{value}</div>
-                <div className="mt-1 text-sm uppercase tracking-[0.18em]">
-                  {label}
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {primaryServices
+              .filter((service) => service.slug !== "skilled-workers")
+              .map((service) => (
+              <Link className="group" href={`/services/${service.slug}`} key={service.slug}>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                  <Image
+                    alt={service.title}
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    src={service.image}
+                  />
                 </div>
-              </div>
+                <h3 className="mt-3 text-lg font-semibold">{service.title}</h3>
+                <p className="mt-1 text-sm text-[#70695f]">
+                  Explore verified profiles and portfolios
+                </p>
+              </Link>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#e5ded2] bg-[#fbfaf7]">
+        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+                Interior categories
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold sm:text-4xl">
+                Browse the marketplace by category
+              </h2>
+            </div>
+            <Link className="text-sm font-semibold text-[#35564d]" href="/services/interior-designers">
+              View all categories
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {secondaryServices.slice(0, 6).map((service, index) => (
+              <Link
+                className={`group grid min-h-36 overflow-hidden rounded-lg md:grid-cols-[1.1fr_0.9fr] ${
+                  index % 3 === 0
+                    ? "bg-[#dbe4df]"
+                    : index % 3 === 1
+                      ? "bg-[#ead9c9]"
+                      : "bg-[#e8e1d6]"
+                }`}
+                href={`/services/${service.slug}`}
+                key={service.slug}
+              >
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold">{service.title}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#605b52]">
+                    {service.description}
+                  </p>
+                </div>
+                <div className="relative min-h-36 overflow-hidden">
+                  <Image
+                    alt={service.title}
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1024px) 25vw, 100vw"
+                    src={service.image}
+                  />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#e5ded2] bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+                <Crown className="size-5 fill-[#efd9a7]" />
+                Featured listings
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold sm:text-4xl">
+                Profiles getting noticed this week
+              </h2>
+            </div>
+            <Link className="text-sm font-semibold text-[#35564d]" href={`/services/${featuredService.slug}`}>
+              Explore True Select
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {primaryServices.slice(0, 3).map((service) => (
+              <Link
+                className="group overflow-hidden rounded-lg border border-[#e5ded2] bg-[#fbfaf7]"
+                href={`/services/${featuredService.slug}`}
+                key={service.slug}
+              >
+                <div className="relative aspect-[16/10]">
+                  <Image
+                    alt={service.title}
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    src={service.image}
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold">{service.title}</h3>
+                  <p className="mt-1 text-sm text-[#70695f]">
+                    Featured professionals and complete profiles
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       <section
-        className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:py-20"
-        id="location"
-      >
-        <div className="grid gap-8 rounded-lg border border-[#ded7ca] bg-white p-6 shadow-sm md:grid-cols-[0.92fr_1.08fr] md:p-8 lg:p-10">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
-              Location based marketplace
-            </p>
-            <h2 className="mt-4 text-4xl font-semibold leading-tight text-[#171716] sm:text-5xl">
-              Find nearby interior experts, suppliers, and labour teams.
-            </h2>
-            <p className="mt-5 text-lg leading-8 text-[#605b52]">
-              Select your city or project area to discover available designers,
-              architects, material vendors, electricians, POP artists, wall
-              artists, and other workers around you.
-            </p>
-          </div>
-
-          <div className="rounded-lg bg-[#f8f5ef] p-5 md:p-6">
-            <label
-              className="text-sm font-semibold uppercase tracking-[0.16em] text-[#6b675f]"
-              htmlFor="city-search"
-            >
-              Search or select project city
-            </label>
-            <input
-              className="mt-3 min-h-12 w-full rounded-full border border-[#d3c8b7] bg-white px-5 text-base text-[#171716] outline-none transition placeholder:text-[#9b948a] focus:border-[#35564d]"
-              id="city-search"
-              list="city-options"
-              placeholder="Type or choose a city in India"
-              type="search"
-            />
-            <datalist id="city-options">
-              {cityOptions.map((location) => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </datalist>
-            <a
-              className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#171716] px-6 text-sm font-semibold text-white transition hover:bg-[#35564d]"
-              href="#interior-designers"
-            >
-              Find providers in this city
-            </a>
-            <p className="mt-4 text-sm leading-6 text-[#605b52]">
-              Start typing to search the list, or open the field suggestions to
-              choose from available Indian cities.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section
-        className="mx-auto max-w-7xl scroll-mt-24 px-5 py-20 sm:px-8 lg:py-24"
+        className="mx-auto max-w-7xl scroll-mt-28 px-5 py-16 sm:px-8 lg:py-20"
         id="interior-designers"
       >
-        <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
-              Interior designers
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+              Popular interior firms
             </p>
-            <h2 className="mt-4 text-4xl font-semibold leading-tight text-[#171716] sm:text-5xl">
-              Find the right designer for every room, budget, and style.
+            <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+              Designers for every room, budget, and style.
             </h2>
           </div>
-          <p className="max-w-2xl text-lg leading-8 text-[#605b52] lg:justify-self-end">
-            Browse verified interior designers by portfolio, city, project
-            type, availability, and design language, then shortlist the teams
-            that match your requirement.
-          </p>
+          <Link className="text-sm font-semibold text-[#35564d]" href="/services/interior-designers">
+            View all designers
+          </Link>
         </div>
-
-        <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {categories.map((category) => (
-            <a
-              className="group rounded-lg border border-[#ded7ca] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[#a89472] hover:shadow-xl hover:shadow-stone-900/8"
-              href="#interior-designers"
-              key={category.name}
-            >
-              <span
-                className={`block h-2 w-12 rounded-full ${getCategoryAccent(
-                  category.accent_class,
-                )}`}
-              />
-              <h3 className="mt-10 text-2xl font-semibold tracking-tight">
-                {category.name}
-              </h3>
-              <p className="mt-3 text-sm font-medium uppercase tracking-[0.16em] text-[#777167]">
-                {category.count_label}
-              </p>
-              <span className="mt-8 inline-block text-sm font-semibold text-[#35564d] transition group-hover:translate-x-1">
-                Browse category
-              </span>
-            </a>
-          ))}
-        </div>
-
-        <div className="mt-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
-            Featured interior firms
-          </p>
-          <ProviderGrid providers={interiorFirms} />
-        </div>
+        <ProviderGrid href="/services/interior-designers" providers={interiorFirms} />
       </section>
 
       <section
-        className="scroll-mt-24 bg-[#171716] px-5 py-20 text-white sm:px-8 lg:py-24"
+        className="scroll-mt-28 bg-[#1e312d] px-5 py-16 text-white sm:px-8 lg:py-20"
         id="material"
       >
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#c9b98f]">
-                Material marketplace
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#d4b27a]">
+                Material suppliers
               </p>
-              <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">
-                Curated material and product supply with trade clarity.
+              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+                Source materials with dependable local supply.
               </h2>
             </div>
-            <a
+            <Link
               className="inline-flex w-fit rounded-full border border-white/25 px-5 py-3 text-sm font-semibold text-white/84 transition hover:border-white hover:text-white"
-              href="#material"
+              href="/services/material-suppliers"
             >
               View all material
-            </a>
+            </Link>
           </div>
 
-          <div className="mt-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#c9b98f]">
-              Featured material suppliers
-            </p>
-            <ProviderGrid providers={materialSuppliers} />
-          </div>
+          <ProviderGrid href="/services/material-suppliers" providers={materialSuppliers} />
         </div>
       </section>
 
       <section
-        className="mx-auto grid max-w-7xl scroll-mt-24 gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[1fr_1fr] lg:py-24"
+        className="mx-auto max-w-7xl scroll-mt-28 px-5 py-16 sm:px-8 lg:py-20"
         id="architects"
       >
-        <div className="space-y-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
-            Architects
-          </p>
-          <h2 className="text-4xl font-semibold leading-tight sm:text-5xl">
-            Architecture support for planning, drawings, and execution.
-          </h2>
-          <p className="text-lg leading-8 text-[#605b52]">
-            Connect with architects for layouts, structure coordination,
-            authority drawings, site planning, BOQs, and execution-ready
-            documentation.
-          </p>
+        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+              Architect firms
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+              Planning expertise for confident execution.
+            </h2>
+          </div>
+          <Link className="text-sm font-semibold text-[#35564d]" href="/services/architects">
+            View all architects
+          </Link>
         </div>
+        <ProviderGrid href="/services/architects" providers={architectFirms} />
+      </section>
 
-        <div className="grid gap-4">
-          {[
-            ["01", "Create a project palette", "Save products, finishes, studios, and inspiration into client-ready boards."],
-            ["02", "Validate every specification", "Confirm dimensions, finish batches, stock windows, and trade pricing before purchase."],
-            ["03", "Coordinate fulfillment", "Track vendors, freight, receiver notes, and install deadlines from one dashboard."],
-          ].map(([step, title, copy]) => (
-            <div
-              className="grid gap-5 rounded-lg border border-[#ded7ca] bg-white p-6 shadow-sm sm:grid-cols-[4rem_1fr]"
-              key={step}
-            >
-              <div className="text-3xl font-semibold text-[#a97d32]">{step}</div>
-              <div>
-                <h3 className="text-xl font-semibold">{title}</h3>
-                <p className="mt-2 leading-7 text-[#605b52]">{copy}</p>
-              </div>
+      <section className="bg-white px-5 py-12 sm:px-8">
+        <div className="mx-auto max-w-7xl pb-14">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a67638]">
+            Real portfolio stories
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold sm:text-4xl">
+            Finished spaces from marketplace studios
+          </h2>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            {portfolioProjects.map((project) => (
+              <Link
+                className="group overflow-hidden rounded-lg border border-[#e5ded2] bg-[#fbfaf7]"
+                href="/services/featured-listings"
+                key={project.title}
+              >
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <Image
+                    alt={project.title}
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                    src={project.image}
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-xl font-semibold">{project.title}</h3>
+                  <p className="mt-2 text-sm text-[#70695f]">
+                    {project.studio} | {project.location}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="mx-auto grid max-w-7xl gap-5 border-y border-[#e5ded2] py-7 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map(([value, label]) => (
+            <div key={label}>
+              <p className="text-3xl font-semibold text-[#23443d]">{value}</p>
+              <p className="mt-1 text-sm uppercase tracking-[0.16em] text-[#70695f]">
+                {label}
+              </p>
             </div>
           ))}
         </div>
-
-        <div className="lg:col-span-2">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#6b675f]">
-            Featured architect firms
-          </p>
-          <ProviderGrid providers={architectFirms} />
-        </div>
       </section>
 
-      <section
-        className="scroll-mt-24 bg-[#d9d0c0] px-5 py-16 sm:px-8"
-        id="man-power"
-      >
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+      <footer className="bg-[#172723] px-5 py-10 text-white sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#5f584f]">
-              Man power
+            <p className="text-lg font-semibold tracking-[0.14em]">TRUE DESIGNS</p>
+            <p className="mt-2 text-sm text-white/65">
+              Interior expertise, materials, and site teams in one place.
             </p>
-            <h2 className="mt-4 text-4xl font-semibold leading-tight text-[#171716] sm:text-5xl">
-              Find skilled labour workers for every interior site task.
-            </h2>
           </div>
-          <div className="rounded-lg bg-[#171716] p-6 text-white shadow-2xl shadow-stone-900/20">
-            <p className="text-lg leading-8 text-white/76">
-              Connect with electricians, POP artists, wall artists, painters,
-              carpenters, plumbers, tile masons, ceiling teams, and other
-              skilled workers needed for residential and commercial interiors.
-            </p>
-            <div className="mt-6 rounded-lg border border-white/16 bg-white/8 p-4">
-              <label
-                className="text-sm font-semibold uppercase tracking-[0.16em] text-white/70"
-                htmlFor="labour-search"
-              >
-                Search or select labour type
-              </label>
-              <input
-                className="mt-3 min-h-12 w-full rounded-full border border-white/16 bg-[#171716] px-5 text-base text-white outline-none transition placeholder:text-white/42 focus:border-white"
-                id="labour-search"
-                list="labour-options"
-                placeholder={`Type or choose from ${labourTeams.length} labour types`}
-                type="search"
-              />
-              <datalist id="labour-options">
-                {labourTeams.map((team) => (
-                  <option key={team} value={team}>
-                    {team}
-                  </option>
-                ))}
-              </datalist>
-            </div>
-            <a
-              className="mt-8 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#171716] transition hover:bg-[#f3eadc]"
-              href="mailto:partners@maisonmarket.example"
-            >
-              Request labour workers
-            </a>
-          </div>
+          <Link className="text-sm font-semibold text-[#d4b27a]" href="/login">
+            List your business
+          </Link>
         </div>
-      </section>
+      </footer>
+      </div>
     </main>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Maison Market | Premium Interior Marketplace",
+  title: "True Designs | Premium Interior Marketplace",
   description:
     "A curated marketplace for interior studios, luxury furniture, architectural lighting, and trade-ready materials.",
 };
